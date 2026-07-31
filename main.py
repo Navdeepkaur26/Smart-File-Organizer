@@ -61,7 +61,7 @@ if folder_path:
 
             print(f"Moved : {file}")
 
-    print("\n✅ All files organized successfully!")
+    print("\n All files organized successfully!")
 
 else:
     print("No folder selected.")
