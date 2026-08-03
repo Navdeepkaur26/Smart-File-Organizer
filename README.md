@@ -87,25 +87,6 @@ pip install -r requirements.txt
 python main.py
 ```
 
----
-
-## 📸 Screenshot
-
-> Add your project screenshot here.
-
-Example:
-
-```
-Smart-File-Organizer/
-│── assets/
-│   └── home.png
-```
-
-README image:
-
-```markdown
-![Smart File Organizer](assets/home.png)
-```
 
 ---
 
