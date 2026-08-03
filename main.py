@@ -1,67 +1,122 @@
-import os
-import shutil
-from tkinter import Tk, filedialog
+import customtkinter as ctk
+from tkinter import filedialog, messagebox
 
-# Hide tkinter window
-root = Tk()
-root.withdraw()
+from file_manager import organize_files
 
-# Select folder
-folder_path = filedialog.askdirectory(title="Select Folder")
+# ---------------- Appearance ---------------- #
 
-if folder_path:
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-    files = os.listdir(folder_path)
+# ---------------- Window ---------------- #
 
-    for file in files:
+app = ctk.CTk()
 
-        full_path = os.path.join(folder_path, file)
+app.title("Smart File Organizer")
 
-        if os.path.isfile(full_path):
+app.geometry("700x500")
 
-            file_name, extension = os.path.splitext(file)
-            extension = extension.lower()
+app.resizable(False, False)
 
-            # Images
-            if extension in [".jpg", ".jpeg", ".png", ".gif", ".bmp"]:
+# ---------------- Title ---------------- #
 
-                destination = os.path.join(folder_path, "Images")
+title = ctk.CTkLabel(
+    app,
+    text="📂 Smart File Organizer",
+    font=("Arial", 28, "bold")
+)
 
-            # PDFs
-            elif extension == ".pdf":
+title.pack(pady=20)
 
-                destination = os.path.join(folder_path, "PDFs")
+# ---------------- Folder Path ---------------- #
 
-            # Videos
-            elif extension in [".mp4", ".mkv", ".avi", ".mov"]:
+folder_var = ctk.StringVar()
 
-                destination = os.path.join(folder_path, "Videos")
+folder_entry = ctk.CTkEntry(
+    app,
+    width=500,
+    textvariable=folder_var
+)
 
-            # Audio
-            elif extension in [".mp3", ".wav"]:
+folder_entry.pack(pady=10)
 
-                destination = os.path.join(folder_path, "Audio")
+# ---------------- Browse ---------------- #
 
-            # Documents
-            elif extension in [".doc", ".docx", ".txt", ".ppt", ".pptx", ".xls", ".xlsx"]:
+def browse_folder():
 
-                destination = os.path.join(folder_path, "Documents")
+    folder = filedialog.askdirectory()
 
-            # Others
-            else:
+    if folder:
+        folder_var.set(folder)
 
-                destination = os.path.join(folder_path, "Others")
+browse_btn = ctk.CTkButton(
+    app,
+    text="📁 Browse Folder",
+    command=browse_folder,
+    width=220
+)
 
-            # Create folder if not exists
-            if not os.path.exists(destination):
-                os.mkdir(destination)
+browse_btn.pack(pady=10)
 
-            # Move file
-            shutil.move(full_path, os.path.join(destination, file))
+# ---------------- Result Box ---------------- #
 
-            print(f"Moved : {file}")
+result_box = ctk.CTkTextbox(
+    app,
+    width=600,
+    height=180
+)
 
-    print("\n All files organized successfully!")
+result_box.pack(pady=20)
 
-else:
-    print("No folder selected.")
+# ---------------- Organize ---------------- #
+
+def organize():
+
+    folder = folder_var.get()
+
+    if folder == "":
+        messagebox.showerror(
+            "Error",
+            "Please select a folder!"
+        )
+        return
+
+    summary = organize_files(folder)
+
+    result_box.delete("1.0", "end")
+
+    total = 0
+
+    result_box.insert("end", "===== ORGANIZATION SUMMARY =====\n\n")
+
+    for key, value in summary.items():
+
+        total += value
+
+        result_box.insert(
+            "end",
+            f"{key} : {value}\n"
+        )
+
+    result_box.insert(
+        "end",
+        f"\nTotal Files : {total}"
+    )
+
+    messagebox.showinfo(
+        "Success",
+        "Files Organized Successfully!"
+    )
+
+organize_btn = ctk.CTkButton(
+    app,
+    text="🚀 Organize Files",
+    command=organize,
+    width=220
+)
+
+organize_btn.pack(pady=10)
+
+# ---------------- Run ---------------- #
+
+app.mainloop()
